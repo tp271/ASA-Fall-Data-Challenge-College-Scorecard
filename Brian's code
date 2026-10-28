@@ -1,0 +1,78 @@
+---
+title: "Visualizing Economic and Health Indicators"
+format:
+  html:
+    embed-resources: true
+execute: 
+  warning: false
+  echo: true
+  error: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(ggthemes)
+library(ggplot2)
+library(ggtext)
+Field <- read.csv("Most-Recent-Cohorts-Field-of-Study.csv")
+```
+
+
+
+```{r}
+#instead of UNIT ID, change to institution name
+#Switch UNITID for INSTNM
+#Switch 243744 for "Stanford University"
+#Switch 110635 for "University of California-Berkeley"
+#Some of the code in this chunk was produced with the aid of ChatGPT
+Field |> 
+  drop_na(DEBT_MALE_PP_ANY_MDN, INSTNM) |> 
+  filter(INSTNM %in% c("Stanford University", "University of California-Berkeley")) |> 
+  mutate(
+    INSTNM = factor(
+      INSTNM,
+      levels = c("Stanford University", "University of California-Berkeley")
+    )) |> 
+  ggplot(aes(
+    x = INSTNM,
+    y = DEBT_MALE_PP_ANY_MDN)) +
+  geom_violin(aes(fill=DEBT_MALE_PP_ANY_MDN),
+              trim = FALSE, 
+              alpha=0.25) +
+  scale_fill_viridis_d() +
+  labs(
+    x = "Institution",
+    y = "Median Male Debt", 
+    title= "Median Parent PLUS loan debt disbursed to males at Stanford and Cal",
+    caption= "Source: Most-Recent-Cohorts-Field-of-Study.csv")+
+  theme_minimal()+
+  geom_jitter(aes(color=DEBT_MALE_PP_ANY_MDN), height=0.25)
+```
+```{r}
+# Switch DEBT_MALE_PP_ANY_MDN for DEBT_ALL_PP_ANY_MDN
+Field |> 
+  drop_na(DEBT_ALL_PP_ANY_MDN, INSTNM) |> 
+  filter(INSTNM %in% c("Stanford University", "University of California-Berkeley")) |> 
+  mutate(
+    INSTNM = factor(
+      INSTNM,
+      levels = c("Stanford University", "University of California-Berkeley")
+    )) |> 
+  ggplot(aes(
+    x = INSTNM,
+    y = DEBT_ALL_PP_ANY_MDN)) +
+  geom_violin(aes(fill=DEBT_ALL_PP_ANY_MDN),
+              trim = FALSE, 
+              alpha=0.25) +
+  scale_fill_viridis_d() +
+  labs(
+    x = "Institution",
+    y = "Median Male Debt", title= "Median Debt for male...")+
+  theme_minimal()+
+  geom_jitter(aes(color=DEBT_ALL_PP_ANY_MDN), height=0.25)
+```
+
+
