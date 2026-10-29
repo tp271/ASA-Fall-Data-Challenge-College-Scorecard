@@ -17,7 +17,24 @@ library(tidyverse)
 library(ggthemes)
 library(ggplot2)
 library(ggtext)
+library(readxl)
 Field <- read.csv("Most-Recent-Cohorts-Field-of-Study.csv")
+Field_excel <- read_excel("msrcohortsfieldofstudy(caonly) (1).xlsx")
+
+```
+
+```{r}
+#Code in this chunk from recommended cleanup code from ChatGPT
+Field_clean <- Field |>
+  mutate(
+    DEBT_MALE_PP_ANY_MDN = na_if(as.character(DEBT_MALE_PP_ANY_MDN), "PS"),
+    DEBT_MALE_PP_ANY_MDN = as.numeric(DEBT_MALE_PP_ANY_MDN))
+#this code piece wasn't wporking intially (lines 33-36)
+Field_excel_clean <- Field_excel |>
+  mutate(
+    DEBT_MALE_PP_ANY_MDN = na_if(as.character(DEBT_MALE_PP_ANY_MDN), "PS"),
+    DEBT_MALE_PP_ANY_MDN = as.numeric(DEBT_MALE_PP_ANY_MDN))
+
 ```
 
 
@@ -28,7 +45,7 @@ Field <- read.csv("Most-Recent-Cohorts-Field-of-Study.csv")
 #Switch 243744 for "Stanford University"
 #Switch 110635 for "University of California-Berkeley"
 #Some of the code in this chunk was produced with the aid of ChatGPT
-Field |> 
+Field_clean |> 
   drop_na(DEBT_MALE_PP_ANY_MDN, INSTNM) |> 
   filter(INSTNM %in% c("Stanford University", "University of California-Berkeley")) |> 
   mutate(
@@ -51,10 +68,11 @@ Field |>
   theme_minimal()+
   geom_jitter(aes(color=DEBT_MALE_PP_ANY_MDN), height=0.25)
 ```
+
 ```{r}
-# Switch DEBT_MALE_PP_ANY_MDN for DEBT_ALL_PP_ANY_MDN
-Field |> 
-  drop_na(DEBT_ALL_PP_ANY_MDN, INSTNM) |> 
+#try above code chunk but with flipped x and y values; in this chunk
+Field_clean |> 
+  drop_na(DEBT_MALE_PP_ANY_MDN, INSTNM) |> 
   filter(INSTNM %in% c("Stanford University", "University of California-Berkeley")) |> 
   mutate(
     INSTNM = factor(
@@ -62,17 +80,17 @@ Field |>
       levels = c("Stanford University", "University of California-Berkeley")
     )) |> 
   ggplot(aes(
-    x = INSTNM,
-    y = DEBT_ALL_PP_ANY_MDN)) +
-  geom_violin(aes(fill=DEBT_ALL_PP_ANY_MDN),
+    x = DEBT_MALE_PP_ANY_MDN,
+    y = INSTNM)) +
+  geom_violin(aes(fill=INSTNM),
               trim = FALSE, 
               alpha=0.25) +
   scale_fill_viridis_d() +
   labs(
     x = "Institution",
-    y = "Median Male Debt", title= "Median Debt for male...")+
+    y = "Median Male Debt", 
+    title= "Median Parent PLUS loan debt disbursed to males at Stanford and Cal",
+    caption= "Source: Most-Recent-Cohorts-Field-of-Study.csv")+
   theme_minimal()+
-  geom_jitter(aes(color=DEBT_ALL_PP_ANY_MDN), height=0.25)
+  geom_jitter(aes(color=DEBT_MALE_PP_ANY_MDN), height=0.25)
 ```
-
-
