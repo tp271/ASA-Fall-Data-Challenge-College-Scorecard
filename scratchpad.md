@@ -11,24 +11,24 @@ Narrative:
 
 Institutions by type and comparing the debt to income ratio, for private and public. As well as filtering schools to determine the best program at each respective institution for  Bachelors, masters and doctorate; and lastly, which program has the lowest debt to income ratio for 1, 4, and 5yrs after graduation.  
 
-Variables to consider: 
+Variables (FOS): 
 
 
 CONTROL
 
-
 DEBT_ALL_STGP_ANY_MDN
-
 
 EARN_MDN_1YR
 
-
 EARN_MDN_4YR
-
 
 EARN_MDN_5YR
 
+CIPDESC
 
+INSTNM
+
+Variables (Insti):      
 
 
 
