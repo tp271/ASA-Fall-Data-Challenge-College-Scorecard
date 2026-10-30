@@ -18,8 +18,9 @@ library(ggthemes)
 library(ggplot2)
 library(ggtext)
 library(readxl)
+library(dplyr)
 Field <- read.csv("Most-Recent-Cohorts-Field-of-Study.csv")
-Field_excel <- read_excel("msrcohortsfieldofstudy(caonly) (1).xlsx")
+Field_excel_csvversion <- read.csv("msrcohortsfieldofstudy(caonly) (1)(in).csv")
 
 ```
 
@@ -29,12 +30,43 @@ Field_clean <- Field |>
   mutate(
     DEBT_MALE_PP_ANY_MDN = na_if(as.character(DEBT_MALE_PP_ANY_MDN), "PS"),
     DEBT_MALE_PP_ANY_MDN = as.numeric(DEBT_MALE_PP_ANY_MDN))
-#this code piece wasn't wporking intially (lines 33-36)
-Field_excel_clean <- Field_excel |>
-  mutate(
-    DEBT_MALE_PP_ANY_MDN = na_if(as.character(DEBT_MALE_PP_ANY_MDN), "PS"),
-    DEBT_MALE_PP_ANY_MDN = as.numeric(DEBT_MALE_PP_ANY_MDN))
 
+```
+```{r}
+Field_clean2 <- Field |>
+  mutate(
+    EARN_MDN_HI_2YR = na_if(as.character(EARN_MDN_HI_2YR), "PS"),
+    EARN_MDN_HI_2YR = as.numeric(EARN_MDN_HI_2YR))
+```
+
+```{r}
+#this chunk not working as intended
+#EARN_MDN_HI_2YR
+Field_excel_clean <- Field_excel_csvversion |>
+  mutate(
+    EARN_MDN_HI_2YR = na_if(as.character(EARN_MDN_HI_2YR), "PS"),
+    EARN_MDN_HI_2YR = as.numeric(EARN_MDN_HI_2YR))
+
+```
+```{r}
+#This chunk makes a violin graph based on all institution types (all states currently) and 
+#Median earnings of graduates working and not enrolled 2 years after completing highest credential
+Field_clean2 |> 
+  drop_na(EARN_MDN_HI_2YR, CONTROL) |> 
+  ggplot(aes(
+    x = CONTROL,
+    y = EARN_MDN_HI_2YR)) +
+  geom_violin(aes(fill=EARN_MDN_HI_2YR),
+              trim = FALSE, 
+              alpha=0.25) +
+  scale_fill_viridis_d() +
+  labs(
+    x = "Institution",
+    y = "Median Male Debt", 
+    title= "Median Parent PLUS loan debt disbursed to males at Stanford and Cal",
+    caption= "Source: Most-Recent-Cohorts-Field-of-Study.csv")+
+  theme_minimal() #Add "+" is I uncomment line below
+  #geom_jitter(aes(color=EARN_MDN_HI_2YR), height=0.25)
 ```
 
 
@@ -94,3 +126,36 @@ Field_clean |>
   theme_minimal()+
   geom_jitter(aes(color=DEBT_MALE_PP_ANY_MDN), height=0.25)
 ```
+```{r}
+Field_clean2 <- Field |>
+  mutate(
+    DEBT_ALL_PP_ANY_MDN = na_if(as.character(DEBT_ALL_PP_ANY_MDN), "PS"),
+    DEBT_ALL_PP_ANY_MDN = as.numeric(DEBT_ALL_PP_ANY_MDN))
+```
+
+
+```{r}
+# Switch DEBT_MALE_PP_ANY_MDN for DEBT_ALL_PP_ANY_MDN
+Field_clean2 |> 
+  drop_na(DEBT_ALL_PP_ANY_MDN, INSTNM) |> 
+  filter(INSTNM %in% c("Stanford University", "University of California-Berkeley")) |> 
+  mutate(
+    INSTNM = factor(
+      INSTNM,
+      levels = c("Stanford University", "University of California-Berkeley")
+    )) |> 
+  ggplot(aes(
+    x = DEBT_ALL_PP_ANY_MDN,
+    y = INSTNM)) +
+  geom_violin(aes(fill=DEBT_ALL_PP_ANY_MDN),
+              trim = FALSE, 
+              alpha=0.25) +
+  scale_fill_viridis_d() +
+  labs(
+    x = "Institution",
+    y = "Median Male Debt", title= "Median Debt for male...")+
+  theme_minimal()+
+  geom_jitter(aes(color=DEBT_ALL_PP_ANY_MDN), height=0.25)
+```
+
+
