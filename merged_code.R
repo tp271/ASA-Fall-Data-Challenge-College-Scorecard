@@ -92,7 +92,7 @@ ggplot(
     ),
     x = "Student Income Group",
     y = "Four-Year Completion Rate (%)",
-    caption = "Source: College Scorecard, California institution-level data"
+    caption = "Source: College Scorecard. Most-Recent-Cohorts-Institution"
   ) +
   scale_y_continuous(
     breaks = seq(0, 100, 10),
@@ -155,9 +155,7 @@ Earnings_Comparison |>
     y = "Five-Year Median Earnings ($)",
     color = "Pell Status",
     caption = paste(
-      "Source: College Scorecard.",
-      "Earnings represent bachelor's program medians",
-      "summarized by institution."
+      "Source: College Scorecard. Most-Recent-Cohorts-Field-of-Study"
     )
   ) +
   theme_bw() +
@@ -170,6 +168,7 @@ Earnings_Comparison |>
   )
 ```
 ```{r}
+#| label: pell-earnings-density
 
 Field <- read_excel(
   "Most-Recent-Cohorts-Field-of-Study.xlsx"
@@ -238,25 +237,27 @@ ggplot(
     labels = scales::label_dollar()
   ) +
   labs(
-    title = "Distribution of Five-Year Median Earnings by Pell Grant Status",
+    title = "Five-Year Earnings by Pell Status",
     x = "Five-Year Median Earnings ($)",
     y = "Density",
     color = "Pell Status",
     fill = "Pell Status",
     caption = paste(
       "Source: College Scorecard.",
-      "Bachelor's degree programs with both earnings values available."
+      "Most-Recent-Cohorts-Field-of-Study"
     )
   ) +
   theme_minimal() +
   theme(
     plot.title = element_text(
-      size = 15,
-      face = "bold"
+      size = 13,
+      face = "bold",
+      hjust = 0.5
     ),
     axis.title = element_text(face = "bold"),
     legend.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank()
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(hjust = 0)
   )
-
 ```
+
