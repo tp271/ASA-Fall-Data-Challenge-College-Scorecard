@@ -343,6 +343,4 @@ ggplot(
     panel.grid.minor = element_blank()
   )
 
-nrow(BA_Earnings)
-
 ```
